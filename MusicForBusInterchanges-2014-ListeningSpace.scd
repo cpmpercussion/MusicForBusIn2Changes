@@ -14,11 +14,12 @@
 ~mainPath = thisProcess.nowExecutingPath.dirname ++ "/";
 
 ~outChannels = 4;
+~outChannelsLower = 4;
 ~recording = false;
 ~shortsounds = true;
 
 o = Server.local.options;
-o.numOutputBusChannels = ~outChannels;
+o.numOutputBusChannels = ~outChannels + ~outChannelsLower;
 Server.default = s = Server.local;
 s.recHeaderFormat = "aiff";
 s.recSampleFormat = "int16";
@@ -167,6 +168,10 @@ s.waitForBoot({
 			var rotatedSource = Rotate2.ar(bFormatSource[1],bFormatSource[2],direction * LFSaw.kr(rotateSpeed));
 			Out.ar(
 				out,
+				DecodeB2.ar(~outChannels,bFormatSource[0],rotatedSource[0],rotatedSource[1]);
+			);
+			Out.ar(
+				out+~outChannels,
 				DecodeB2.ar(~outChannels,bFormatSource[0],rotatedSource[0],rotatedSource[1]);
 			)
 		}).play(s);
